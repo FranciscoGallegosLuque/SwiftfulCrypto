@@ -52,7 +52,11 @@ import Foundation
  */
 
 // MARK: - PostModel
-struct CoinModel: Identifiable, Codable {
+struct CoinModel: Identifiable, Codable, Equatable {
+    static func == (lhs: CoinModel, rhs: CoinModel) -> Bool {
+        lhs.id == rhs.id
+    }
+    
     let id, symbol, name: String
     let image: String
     let currentPrice: Double

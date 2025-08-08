@@ -22,6 +22,7 @@ class CoinImageService {
     init(coin: CoinModel) {
         self.coin = coin
         self.imageName = coin.id
+        getCoinImage()
     }
 
     private func getCoinImage() {
@@ -36,7 +37,7 @@ class CoinImageService {
     }
 
     private func downloadCoinImage() {
-        guard let url = URL(string: imageName) else { return }
+        guard let url = URL(string: coin.image) else { return }
 
         imageSubscription = NetworkingManager.download(url: url)
             .tryMap({ data -> UIImage? in
