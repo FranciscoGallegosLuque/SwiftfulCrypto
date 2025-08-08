@@ -31,5 +31,5 @@ struct CoinLogoView: View {
 }
 
 #Preview(traits: .sizeThatFitsLayout) {
-    CoinLogoView(coin: PreviewMock.previewCoin)
+    CoinLogoView(coin: PreviewMock.coin)
 }

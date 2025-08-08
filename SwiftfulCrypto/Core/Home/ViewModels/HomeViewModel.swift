@@ -27,7 +27,7 @@ class HomeViewModel: ObservableObject {
         case rank, rankReversed, holdings, holdingsReversed, price,
             priceReversed
     }
-
+    
     init() {
         addSubscribers()
     }

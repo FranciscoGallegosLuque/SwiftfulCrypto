@@ -8,7 +8,7 @@
 import Foundation
 
 struct PreviewMock {
-    static let previewCoin = CoinModel.sample
+    static let coin = CoinModel.sample
     
     static let stat1 = StatisticModel(title: "Market Cap", value: "$12.5Bn", percentageChange: 25.34)
     static let stat2 = StatisticModel(title: "Total Volume", value: "$1.23Tr")
