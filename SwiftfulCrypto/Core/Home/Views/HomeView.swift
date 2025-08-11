@@ -12,54 +12,64 @@ struct HomeView: View {
     @EnvironmentObject private var vm: HomeViewModel
     @State private var showPortfolio: Bool = false // animate right
     @State private var showPortfolioView: Bool = false // new sheet
-    
+    @State private var showSettingView: Bool = false // new sheet
     @State private var selectedCoin: CoinModel? = nil
     @State private var showDetailView: Bool = false
 
     var body: some View {
-        ZStack {
-            // Background layer
-            Color.theme.background
-                .ignoresSafeArea()
-                .sheet(isPresented: $showPortfolioView) {
-                    PortfolioView()
-                        .environmentObject(vm)
-                }
-            
-            // Content layer
-            VStack {
-                homeHeader
-                HomeStatsView(showPortfolio: $showPortfolio)
-                SearchBarView(searchText: $vm.searchText)
-
-                columnTitles
-
-                if !showPortfolio {
-                    allCoinsList
-                        .transition(.move(edge: .leading))
-                }
-
-                if showPortfolio {
-                    portfolioCoinsList
+        NavigationStack {
+            ZStack {
+                // Background layer
+                Color.theme.background
+                    .ignoresSafeArea()
+                    .sheet(isPresented: $showPortfolioView) {
+                        PortfolioView()
+                            .environmentObject(vm)
+                    }
+                
+                // Content layer
+                VStack {
+                    homeHeader
+                    HomeStatsView(showPortfolio: $showPortfolio)
+                    SearchBarView(searchText: $vm.searchText)
+                    
+                    columnTitles
+                    
+                    if !showPortfolio {
+                        allCoinsList
+                            .transition(.move(edge: .leading))
+                    }
+                    
+                    if showPortfolio {
+                        ZStack(alignment: .top) {
+                            if vm.portfolioCoins.isEmpty && vm.searchText.isEmpty {
+                                portfolioEmptyText
+                            } else {
+                                portfolioCoinsList
+                                    
+                            }
+                        }
                         .transition(.move(edge: .trailing))
+                    }
+                    
+                    Spacer(minLength: 0)
                 }
-
-                Spacer(minLength: 0)
+                .sheet(isPresented: $showSettingView) {
+                    SettingsView()
+                }
+                
             }
+            .navigationDestination(isPresented: $showDetailView) {
+                    DetailLoadingView(coin: $selectedCoin)
+            }
+            .toolbar(.hidden)
         }
-        .background(
-            NavigationLink(
-                destination: DetailLoadingView(coin: $selectedCoin),
-                isActive: $showDetailView,
-                label: { EmptyView() })
-        )
     }
 }
 
 #Preview {
     HomeView()
         .environmentObject(PreviewMock.homeVM)
-        .toolbar(.hidden)
 }
 
 extension HomeView {
@@ -70,6 +80,8 @@ extension HomeView {
                 .onTapGesture {
                     if showPortfolio {
                         showPortfolioView.toggle()
+                    } else {
+                        showSettingView.toggle()
                     }
                 }
                 .background(
@@ -102,9 +114,19 @@ extension HomeView {
                     .onTapGesture {
                         segue(coin: coin)
                     }
+                    .listRowBackground(Color.clear)
             }
         }
         .listStyle(PlainListStyle())
+    }
+    
+    private var portfolioEmptyText: some View {
+        Text("You haven't added any coins yo your portfolio yet. Click the + button to get started!")
+            .font(.callout)
+            .foregroundStyle(Color.theme.accent)
+            .fontWeight(.medium)
+            .multilineTextAlignment(.center)
+            .padding(50)
     }
 
     private var portfolioCoinsList: some View {
@@ -116,6 +138,7 @@ extension HomeView {
                     .onTapGesture {
                         segue(coin: coin)
                     }
+                    .listRowBackground(Color.clear)
             }
         }
         .listStyle(PlainListStyle())
@@ -124,6 +147,7 @@ extension HomeView {
     private func segue(coin: CoinModel) {
         selectedCoin = coin
         showDetailView.toggle()
+        print(showDetailView)
     }
 
     private var columnTitles: some View {

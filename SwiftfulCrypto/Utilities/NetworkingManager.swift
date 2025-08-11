@@ -27,9 +27,9 @@ class NetworkingManager {
         -> AnyPublisher<Data, any Error>
     {
         return URLSession.shared.dataTaskPublisher(for: url)
-            .subscribe(on: DispatchQueue.global(qos: .default))
+//            .subscribe(on: DispatchQueue.global(qos: .default)) // el cambio de thread se hace automatico, no hace falta esta linea
             .tryMap({ try handleURLResponse(output: $0, url: url) })
-            .receive(on: DispatchQueue.main)
+            .retry(3)
             .eraseToAnyPublisher()
     }
 
